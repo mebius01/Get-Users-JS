@@ -123,7 +123,7 @@ function accCreateElement(el, arrClass, cont) {
     if (arrClass) {
         arrClass.forEach(item => {
             element.classList.add(item);
-        })
+        });
     }
     if (cont) {
         element.append(cont);
