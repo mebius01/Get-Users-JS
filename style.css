@@ -1,8 +1,11 @@
-.container {
+body {
     position: relative;
 }
 .btn__add {
     position: fixed;
     top: 20px;
-    right: -20px;
+    right: 20px;
+}
+.form__user {
+    margin-top: 48px;
 }

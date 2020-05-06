@@ -2,18 +2,45 @@
 // name, email, username, phone, website
 
 const addBtn = document.querySelector(".btn__add");
-const userForm = document.querySelector(".form__user");
-const cardUser = document.querySelector(".card__user");
+const userBlockForm = document.querySelector(".form__user");
 const collapsible = document.querySelector(".collapsible");
+const userForm = document.forms["addUser"];
 
+userForm.addEventListener("submit", submitHendler);
+
+// Скрывает показывает форму
 addBtn.addEventListener("click", showFormHendler)
 function showFormHendler(event) {
     event.preventDefault();
-    userForm.classList.toggle("hide");
-    console.log(userForm);
+    userBlockForm.classList.toggle("hide");
 }
 
-// AJAX
+// Добавляет нового usera на страницу
+function submitHendler(event) {
+    event.preventDefault();
+    const name = userForm.elements['name'];
+    const email = userForm.elements['email'];
+    const username = userForm.elements['username'];
+    const phone = userForm.elements['phone'];
+    const website = userForm.elements['web'];
+
+    const newUser = createUserObject(name.value, email.value, username.value, phone.value, website.value);
+    const liNewUser = creaeLi(newUser);
+
+    collapsible.insertAdjacentElement("afterbegin", liNewUser);
+    userForm.reset();
+    // userBlockForm.classList.toggle("hide");
+
+}
+
+// Формирует userObject
+function createUserObject(name, email, username, phone, website) {
+    const userObject = {name, email, username, phone, website}
+    console.log(userObject);
+    return userObject;
+}
+
+// AJAX GET
 function getUsers(cb) {
     const xhr = new XMLHttpRequest();
     xhr.open("GET", "https://jsonplaceholder.typicode.com/users");
@@ -29,6 +56,7 @@ function getUsers(cb) {
     xhr.send();
 }
 
+// Формирует фрагмент из полученных данных с сервера
 getUsers((users) => {
     const fragment = document.createDocumentFragment();
     users.forEach(user => {
@@ -37,7 +65,7 @@ getUsers((users) => {
     collapsible.appendChild(fragment);
 })
 
-// Создает одного юзера
+// Создает li для одного юзера
 function creaeLi(user) {
     const li = document.createElement("li");
     const div = document.createElement("div");
