@@ -4,8 +4,8 @@ body {
 
 .btn__add {
     position: fixed;
-    top: 10px;
-    right: 20px;
+    top: 20px;
+    left: 20px;
 }
 
 .form__user {
