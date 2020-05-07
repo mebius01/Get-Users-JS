@@ -23,7 +23,7 @@ function showFormHendler(event) {
     }
 }
 
-// Добавляет нового usera на страницу
+// Отправляет данные нового юзера на сервер и добавляет его на страницу
 function submitHendler(event) {
     event.preventDefault();
     const name = userForm.elements['name'];
@@ -31,17 +31,13 @@ function submitHendler(event) {
     const username = userForm.elements['username'];
     const phone = userForm.elements['phone'];
     const website = userForm.elements['web'];
-
     const newUser = createUserObject(name.value, email.value, username.value, phone.value, website.value);
-    const liNewUser = creaeLi(newUser);
-
-    collapsible.insertAdjacentElement("afterbegin", liNewUser);
-    userForm.reset();
-    postUser(newUser, (user) => {
-        console.log(user);
-    });
-    // userBlockForm.classList.toggle("hide");
-
+    GetAjax("POST", "https://jsonplaceholder.typicode.com/users", (response) => {
+        const liNewUser = creaeLi(response);
+        collapsible.insertAdjacentElement("afterbegin", liNewUser);
+        userForm.reset();
+        console.log(response);
+    }, newUser);
 }
 
 // Формирует userObject
@@ -56,44 +52,29 @@ function createUserObject(name, email, username, phone, website) {
     return userObject;
 }
 
-// AJAX GET
-function getUsers(cb) {
+function GetAjax(method, url, cb, object) {
     const xhr = new XMLHttpRequest();
-    xhr.open("GET", "https://jsonplaceholder.typicode.com/users");
+    xhr.open(method, url);
     xhr.addEventListener("load", () => {
-        const users = JSON.parse(xhr.responseText)
-        cb(users)
-    })
-
-    xhr.addEventListener("error", () => {
-        console.log("ERROR");
-    })
-
-    xhr.send();
-}
-
-// AJAX POST
-function postUser(object, cb) {
-    const xhr = new XMLHttpRequest();
-    xhr.open("POST", "https://jsonplaceholder.typicode.com/users");
-    xhr.addEventListener("load", () => {
-        const user = JSON.parse(xhr.responseText);
-        cb(user);
+        const response = JSON.parse(xhr.responseText)
+        cb(response)
     });
-
-    xhr.setRequestHeader("Content-type", "application/json; charset=UTF-8")
-
     xhr.addEventListener("error", () => {
         console.log("ERROR");
     });
-
-    xhr.send(JSON.stringify(object));
+    if (object) {
+        xhr.setRequestHeader("Content-type", "application/json; charset=UTF-8");
+        xhr.send(JSON.stringify(object));
+    } else{
+        xhr.send();
+    }
+    // xhr.send();
 }
 
-// Формирует фрагмент из полученных данных с сервера
-getUsers((users) => {
+// Получает данніе и формирует фрагмент из полученных данных с сервера
+GetAjax("GET", "https://jsonplaceholder.typicode.com/users", (response) => {
     const fragment = document.createDocumentFragment();
-    users.forEach(user => {
+    response.forEach(user => {
         fragment.appendChild(creaeLi(user));
     })
     collapsible.appendChild(fragment);
@@ -138,3 +119,36 @@ document.addEventListener('DOMContentLoaded', function () {
         accordion: false
     });
 })
+
+// AJAX GET
+// function getUsers(cb) {
+//     const xhr = new XMLHttpRequest();
+//     xhr.open("GET", "https://jsonplaceholder.typicode.com/users");
+//     xhr.addEventListener("load", () => {
+//         const users = JSON.parse(xhr.responseText)
+//         cb(users)
+//     })
+
+//     xhr.addEventListener("error", () => {
+//         console.log("ERROR");
+//     })
+
+//     xhr.send();
+// }
+// AJAX POST
+// function postUser(object, cb) {
+//     const xhr = new XMLHttpRequest();
+//     xhr.open("POST", "https://jsonplaceholder.typicode.com/users");
+//     xhr.addEventListener("load", () => {
+//         const user = JSON.parse(xhr.responseText);
+//         cb(user);
+//     });
+
+//     xhr.setRequestHeader("Content-type", "application/json; charset=UTF-8")
+
+//     xhr.addEventListener("error", () => {
+//         console.log("ERROR");
+//     });
+
+//     xhr.send(JSON.stringify(object));
+// }
